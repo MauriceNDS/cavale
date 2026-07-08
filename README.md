@@ -11,8 +11,8 @@ repository.
 
 | Part   | Path   | Repository                                   | Stack                       |
 |--------|--------|----------------------------------------------|-----------------------------|
-| API    | `api/` | [`cavale-api`](https://github.com/MauriceNDS/cavale-api) | Java 25 · Spring Boot 4 · Postgres |
-| Web    | `web/` | _(planned)_ `cavale-web`                     | _(frontend, TBD)_           |
+| API    | `api/` | [`cavale-api`](https://github.com/MauriceNDS/cavale-api) | Java 26 · Spring Boot 4 · Postgres 18 |
+| Web    | `web/` | [`cavale-web`](https://github.com/MauriceNDS/cavale-web) | React 19 · Vite · Tailwind 4 |
 | Infra  | `infra/` | _(planned)_                                | Docker Compose · deploy     |
 
 Each part has its own README, issues, and CI. This repo pins each part at a
