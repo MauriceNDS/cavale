@@ -1,76 +1,104 @@
 # Cavale
 
-**Cavale** /ka.val/ — French for *galloping* / *running free*. A training
-companion for **ultra-trail running** and the strength work that supports it.
+> **cavale** /ka.val/ — French noun: a getaway, a free run, a great escape.
 
-This is the **meta-repository**. It owns no application code itself — it links
-the individual parts together as **git submodules**, each part living in its own
-repository.
+The **ultra-trail training companion**: one app for the plan, the strength work, the
+Strava data and the watch. Built end-to-end — Spring Boot API, React SPA, Postgres,
+CI/CD on self-hosted runners — and shipping a **built-in MCP server**, so an AI
+assistant can coach directly on top of your training data.
+
+**Live at [cavale.adel-sol.com](https://cavale.adel-sol.com)** — hit *Explore the
+live demo*: one click provisions a private, fully-seeded, throwaway sandbox.
+No sign-up, it deletes itself.
+
+![Landing page](docs/screenshots/landing.png)
+
+## A quick tour
+
+| Home — next session, goals, records | Planning — typed, colour-coded weeks |
+|---|---|
+| ![Home](docs/screenshots/home.png) | ![Planning](docs/screenshots/planning.png) |
+
+| Goal — the season converges on the A race | Activities — synced or logged, shoes tracked |
+|---|---|
+| ![Goal](docs/screenshots/objective.png) | ![Activities (dark)](docs/screenshots/activities-dark.png) |
+
+![Statistics (dark)](docs/screenshots/stats-dark.png)
+
+## What it does
+
+- **Season-long plans** — weeks are typed (build / shock / deload / taper / race),
+  sessions are colour-coded by kind; week, month and season views.
+- **Strava, live** — webhook push with a polling safety net: activities land seconds
+  after you save them.
+- **Strength included** — circuits, live in-workout logging, exercise sheets; the
+  gym is part of the plan, not another app.
+- **Down to the watch** — planned workouts push to Garmin via Intervals.icu, target
+  paces on the wrist.
+- **Stats that decide** — fitness/fatigue/form, ACWR-guarded progression, a trail
+  performance index, shoe mileage.
+- **An AI coach that speaks MCP** — the API embeds a stateless MCP server
+  (JSON-RPC over `/mcp`, same JWT auth as REST). Plug in Claude and build, validate
+  and re-align plans conversationally, inside hard physiological guardrails.
+- **Bilingual (FR/EN), light & dark, mobile-first.**
 
 ## Repository map
 
-| Part   | Path   | Repository                                   | Stack                       |
-|--------|--------|----------------------------------------------|-----------------------------|
-| API    | `api/` | [`cavale-api`](https://github.com/MauriceNDS/cavale-api) | Java 26 · Spring Boot 4 · Postgres 18 |
-| Web    | `web/` | [`cavale-web`](https://github.com/MauriceNDS/cavale-web) | React 19 · Vite · Tailwind 4 |
-| Infra  | `infra/` | _(planned)_                                | Docker Compose · deploy     |
+This is the **meta-repository**: it owns no application code, it pins each part at
+a specific commit via git submodules.
 
-Each part has its own README, issues, and CI. This repo pins each part at a
-specific commit via the submodule pointer.
+| Part | Path   | Repository | Stack |
+|------|--------|------------|-------|
+| API  | `api/` | [`cavale-api`](https://github.com/MauriceNDS/cavale-api) | Java 26 · Spring Boot 4 · Postgres 18 · Flyway · MCP |
+| Web  | `web/` | [`cavale-web`](https://github.com/MauriceNDS/cavale-web) | React 19 · TypeScript · Vite · Tailwind 4 · TanStack |
+
+## How it runs
+
+```mermaid
+flowchart LR
+    dev[git push] -->|develop / main| ci[CI · self-hosted runner\nfull test suite incl. Testcontainers]
+    ci -->|scp + systemd| envs[dev & prod environments\nSpring Boot · Postgres · Caddy]
+    envs --- tunnel[Cloudflare Tunnel]
+    tunnel --- users((users))
+```
+
+- `git push` on `develop` deploys to the dev environment, on `main` to production —
+  a red test suite blocks the deploy.
+- Everything is self-hosted on a Proxmox homelab (LXC containers), published
+  outbound-only through a Cloudflare Tunnel: no open ports.
+- The public demo runs on the exact production stack shown above.
 
 ## Cloning
-
-Clone **with submodules** (one step):
 
 ```bash
 git clone --recursive https://github.com/MauriceNDS/cavale.git
 ```
 
-Already cloned without `--recursive`? Initialise them after the fact:
+Already cloned without `--recursive`?
 
 ```bash
 git submodule update --init --recursive
 ```
 
-## Daily workflow — the two-step commit (READ THIS)
+### The two-step submodule workflow
 
 Submodules are pointers to a commit in another repo. The golden rule:
 
 > **Commit & push inside the part first. THEN bump the pointer in the meta repo.**
 
-Concretely, when you change the API:
-
 ```bash
-# 1. work inside the part, like a normal repo
 cd api
 git add -A && git commit -m "feat(training): add plan endpoint"
-git push                       # push the PART first — non-negotiable
+git push                     # push the PART first — non-negotiable
 
-# 2. record the new pointer in the meta repo
 cd ..
-git add api                    # stages the updated submodule commit
+git add api                  # stages the updated submodule commit
 git commit -m "chore: bump api"
-git push                       # push the META
+git push                     # push the META
 ```
 
-If you push the meta before pushing the part, anyone cloning gets a dangling
-pointer. Part first, always.
+## Status & contributions
 
-## Keeping submodules up to date
-
-```bash
-git pull --recurse-submodules          # pull meta + checked-out submodule commits
-git submodule update --remote --merge  # fast-forward submodules to their latest remote
-```
-
-## Adding a new part later
-
-```bash
-git submodule add https://github.com/MauriceNDS/cavale-web.git web
-git commit -m "chore: add web submodule"
-```
-
-## Status
-
-🚧 Early development, backend-first. The API is where the work is happening —
-see [`api/`](api) and its `docs/ROADMAP.md`.
+In production and actively developed. The code is public **to read** — it doubles
+as an engineering portfolio — but this is a personal project: issues and questions
+are welcome, pull requests are generally not merged.
