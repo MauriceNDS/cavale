@@ -23,7 +23,7 @@ specific commit via the submodule pointer.
 Clone **with submodules** (one step):
 
 ```bash
-git clone --recursive git@github.com:MauriceNDS/cavale.git
+git clone --recursive https://github.com/MauriceNDS/cavale.git
 ```
 
 Already cloned without `--recursive`? Initialise them after the fact:
@@ -66,7 +66,7 @@ git submodule update --remote --merge  # fast-forward submodules to their latest
 ## Adding a new part later
 
 ```bash
-git submodule add git@github.com:MauriceNDS/cavale-web.git web
+git submodule add https://github.com/MauriceNDS/cavale-web.git web
 git commit -m "chore: add web submodule"
 ```
 

@@ -1,6 +1,6 @@
 [submodule "api"]
 	path = api
-	url = git@github.com:MauriceNDS/cavale-api.git
+	url = https://github.com/MauriceNDS/cavale-api.git
 [submodule "web"]
 	path = web
-	url = git@github.com:MauriceNDS/cavale-web.git
+	url = https://github.com/MauriceNDS/cavale-web.git
